@@ -16,6 +16,7 @@ use Yii;
  * @property integer $create_time
  * @property string $icon
  * @property string $section
+ * @property integer $category
  * */
 class Album extends \yii\db\ActiveRecord
 {
@@ -45,13 +46,18 @@ class Album extends \yii\db\ActiveRecord
         return $this->hasMany(AlbumImgRel::className(), ['album_id'=>'id']);
     }
 
+    public function getCat()
+    {
+        return $this->hasOne(Category::className(), ['id'=>'category']);
+    }
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['status', 'create_time', 'icon'], 'integer'],
+            [['status', 'create_time', 'icon', 'category'], 'integer'],
             [['title'], 'required'],
             [['title', 'section',  'key'], 'string', 'max' => 255],
         ];
@@ -65,9 +71,10 @@ class Album extends \yii\db\ActiveRecord
     public function fields()
     {
         $fields = parent::fields();
-        unset($fields['id'], $fields['status'], $fields['key']);
+        unset($fields['id'], $fields['status'], $fields['key'],  $fields['section'],  $fields['category']);
         $fields[] = 'sid';
         $fields[] = 'iconImg';
+        $fields[] = 'cat';
         return $fields;
     }
 
@@ -93,6 +100,7 @@ class Album extends \yii\db\ActiveRecord
             'key' => 'Key/Tag',
             'icon' => 'Icon',
             'section' => '所属类别',
+            'category' => 'Category ID',
         ];
     }
 }

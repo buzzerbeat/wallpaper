@@ -34,6 +34,7 @@ return [
             'rules' => [
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'album'],
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'image'],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'category'],
                 'GET,HEAD images/<sid>' => 'image/view',
             ],
         ],
