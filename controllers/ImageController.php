@@ -12,12 +12,10 @@ namespace wallpaper\controllers;
 use common\components\Utility;
 use wallpaper\models\WpImage;
 use yii\data\ActiveDataProvider;
-use yii\rest\ActiveController;
 use yii\rest\Controller;
 
 class ImageController extends Controller
 {
-    public $modelClass = 'wallpaper\models\WpImage';
 
     public function behaviors()
     {
@@ -50,7 +48,7 @@ class ImageController extends Controller
             'query' => $query->orderBy('id desc')
         ]);
     }
-    
+
 
     public function actionView($sid)
     {
