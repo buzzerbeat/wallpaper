@@ -36,6 +36,7 @@ return [
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'image'],
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'category'],
                 'GET,HEAD images/<sid>' => 'image/view',
+                'GET,HEAD albums/<sid>' => 'album/view',
             ],
         ],
     ],

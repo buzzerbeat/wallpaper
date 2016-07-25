@@ -10,8 +10,12 @@ namespace wallpaper\controllers;
 
 
 use common\components\Utility;
+use wallpaper\models\ImageFavForm;
+use wallpaper\models\ImageLikeForm;
 use wallpaper\models\WpImage;
+use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\auth\HttpBearerAuth;
 use yii\rest\Controller;
 
 class ImageController extends Controller
@@ -20,14 +24,10 @@ class ImageController extends Controller
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-//        $behaviors[] = [
-//            'class' => 'yii\filters\HttpCache',
-//            'only' => ['index'],
-//            'lastModified' => function ($action, $params) {
-//                $q = new \yii\db\Query();
-//                return $q->from('random_cache')->max('updated_at');
-//            },
-//        ];
+        $behaviors['authenticator'] = [
+            'class' => HttpBearerAuth::className(),
+            'only' => ['fav',  'like', 'fav-list'],
+        ];
 
 
         return $behaviors;
@@ -54,4 +54,37 @@ class ImageController extends Controller
     {
         return WpImage::findOne(Utility::id($sid));
     }
+
+    public function actionFavList() {
+        $user = \Yii::$app->user->identity;
+        $query =  WpImage::find()
+            ->leftJoin('wp_image_fav', '`wp_image_fav`.`wp_image_id` = `wp_image`.`id`')
+            ->where([
+                'status' => WpImage::STATUS_ACTIVE,
+                '`wp_image_fav`.`user_id`' => $user->id,
+            ]);
+        return new ActiveDataProvider([
+            'query' => $query->orderBy('id desc')
+        ]);
+    }
+
+    public function actionLike()
+    {
+        $likeForm = new ImageLikeForm();
+        if ($likeForm->load(Yii::$app->getRequest()->post(), '') && $likeForm->like()) {
+            return ["status"=>0, "message"=>""];
+        }
+        return ["status"=>1, "message"=>implode(",", $likeForm->getFirstErrors())];
+    }
+
+    public function actionFav()
+    {
+        $favForm = new ImageFavForm();
+        if ($favForm->load(Yii::$app->getRequest()->post(), '') && $favForm->fav()) {
+            return ["status"=>0, "message"=>""];
+        }
+        return ["status"=>1, "message"=>implode(",", $favForm->getFirstErrors())];
+
+    }
+
 }
