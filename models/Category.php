@@ -4,6 +4,7 @@ namespace wallpaper\models;
 
 use common\components\Utility;
 use Yii;
+use wallpaper\models\Album;
 
 /**
  * This is the model class for table "category".
@@ -59,6 +60,10 @@ class Category extends \yii\db\ActiveRecord
     public function getSid() {
         return Utility::sid($this->id);
     }
+    
+    public function extraFields(){
+    	return ['albums'];
+    }
 
     public function fields()
     {
@@ -68,5 +73,9 @@ class Category extends \yii\db\ActiveRecord
             'keyword',
         ];
         return $fields;
+    }
+    
+    public function getAlbums(){
+    	return $this->hasMany(Album::className(), ['category' => 'id']);
     }
 }
