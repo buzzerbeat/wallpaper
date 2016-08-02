@@ -56,7 +56,6 @@ class WpImage extends \yii\db\ActiveRecord
             'sid',
             'image',
             'album',
-            'rank',
         ];
         return $fields;
     }
