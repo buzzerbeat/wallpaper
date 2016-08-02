@@ -38,11 +38,11 @@ class WpImage extends \yii\db\ActiveRecord
     }
 
     public function getRel() {
-        return $this->hasOne(AlbumImgRel::className(), ['wp_img_id'=>'id']);
+        return $this->hasMany(AlbumImgRel::className(), ['wp_img_id'=>'id']);
     }
 
     public function getAlbum() {
-        return $this->hasOne(Album::className(), ['id' => 'album_id'])
+        return $this->hasMany(Album::className(), ['id' => 'album_id'])
             ->via('rel');
     }
 
@@ -56,6 +56,7 @@ class WpImage extends \yii\db\ActiveRecord
             'sid',
             'image',
             'album',
+            'rank',
         ];
         return $fields;
     }
@@ -77,8 +78,8 @@ class WpImage extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['status', 'img_id'], 'required'],
-            [['status', 'img_id'], 'integer'],
+            [['status', 'img_id'], 'required', 'on'=>'default'],
+            [['status', 'img_id', 'rank'], 'integer'],
             [['desc', 'source_url'], 'string'],
         ];
     }
@@ -94,6 +95,14 @@ class WpImage extends \yii\db\ActiveRecord
             'img_id' => 'Img ID',
             'desc' => 'Desc',
             'source_url' => 'Source Url',
+            'rank' => 'Rank'
         ];
+    }
+    
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios['timer'] = ['rank'];
+        return $scenarios;
     }
 }
