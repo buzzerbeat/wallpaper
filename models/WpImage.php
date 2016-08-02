@@ -77,7 +77,7 @@ class WpImage extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['status', 'img_id'], 'required', 'on'=>'default'],
+            [['status', 'img_id'], 'required'],
             [['status', 'img_id', 'rank'], 'integer'],
             [['desc', 'source_url'], 'string'],
         ];
@@ -96,12 +96,5 @@ class WpImage extends \yii\db\ActiveRecord
             'source_url' => 'Source Url',
             'rank' => 'Rank'
         ];
-    }
-    
-    public function scenarios()
-    {
-        $scenarios = parent::scenarios();
-        $scenarios['timer'] = ['rank'];
-        return $scenarios;
     }
 }
