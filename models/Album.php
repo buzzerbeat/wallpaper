@@ -40,7 +40,7 @@ class Album extends \yii\db\ActiveRecord
     }
 
     public function getImages() {
-        return $this->hasMany(Image::className(), ['id' => 'img_id'])
+        return $this->hasMany(Image::className(), ['id' => 'wp_img_id'])
             ->via('rels');
     }
 
@@ -74,7 +74,7 @@ class Album extends \yii\db\ActiveRecord
     public function fields()
     {
         $fields = parent::fields();
-        unset($fields['id'], $fields['status'], $fields['key'],  $fields['section'],  $fields['category']);
+        unset($fields['id'], $fields['status'], $fields['key'],  $fields['section'],  $fields['category'], $fields['icon']);
         $fields[] = 'sid';
         $fields[] = 'iconImg';
         $fields[] = 'cat';
