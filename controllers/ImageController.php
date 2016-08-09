@@ -28,7 +28,7 @@ class ImageController extends Controller
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
             'class' => HttpBearerAuth::className(),
-            'only' => ['fav',  'like', 'fav-list'],
+            'only' => ['fav',  'like', 'fav-list', 'like-list'],
         ];
 
 
@@ -75,6 +75,19 @@ class ImageController extends Controller
             ->where([
                 'status' => WpImage::STATUS_ACTIVE,
                 '`wp_image_fav`.`user_id`' => $user->id,
+            ]);
+        return new ActiveDataProvider([
+            'query' => $query->orderBy('id desc')
+        ]);
+    }
+    
+    public function actionLikeList() {
+        $user = \Yii::$app->user->identity;
+        $query =  WpImage::find()
+            ->leftJoin('wp_image_like', '`wp_image_like`.`wp_image_id` = `wp_image`.`id`')
+            ->where([
+                'status' => WpImage::STATUS_ACTIVE,
+                '`wp_image_like`.`user_id`' => $user->id,
             ]);
         return new ActiveDataProvider([
             'query' => $query->orderBy('id desc')
