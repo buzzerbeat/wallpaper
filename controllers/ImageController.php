@@ -13,6 +13,7 @@ use common\components\Utility;
 use wallpaper\models\ImageFavForm;
 use wallpaper\models\ImageLikeForm;
 use wallpaper\models\WpImage;
+use wallpaper\models\AlbumImgRel;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\auth\HttpBearerAuth;
@@ -20,13 +21,14 @@ use yii\rest\Controller;
 
 class ImageController extends Controller
 {
+    public $modelClass = 'wallpaper\models\WpImage';
 
     public function behaviors()
     {
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
             'class' => HttpBearerAuth::className(),
-            'only' => ['fav',  'like', 'fav-list'],
+            'only' => ['fav',  'like', 'fav-list', 'like-list'],
         ];
 
 
@@ -34,18 +36,29 @@ class ImageController extends Controller
     }
     public function actionIndex()
     {
-        $album = \Yii::$app->request->get('cat', 0);
-        $query =  WpImage::find()
-            ->leftJoin('album_img_rel', '`album_img_rel`.`wp_img_id` = `wp_image`.`id`')
-            ->where([
-                'status' => WpImage::STATUS_ACTIVE,
-            ]);
-        if ($album) {
-            $query->andWhere(['`album_img_rel`.`album_id`' => $album]);
+        $album = \Yii::$app->request->get('album', '');
+        $photo = \Yii::$app->request->get('photo', '');
+         
+        $query = WpImage::find()->where(['status'=>WpImage::STATUS_ACTIVE]);
+        if(!empty($album) || !empty($photo)){
+            $query->leftJoin('album_img_rel', '`wp_image`.`id` = `album_img_rel`.`wp_img_id`');
+             
+            if(!empty($album)){
+                $query->andWhere(['`album_img_rel`.`album_id`' => Utility::id($album)]);
+            }
+            if(!empty($photo)){
+                $photoId = Utility::id($photo);
+                $albums = AlbumImgRel::find()->select('album_id')->where(['wp_img_id'=>$photoId])->all();
+                $albumIds = [];
+                foreach($albums as $alb){
+                    $albumIds[] = $alb->album_id;
+                }
+                $query->andWhere(['or', '`wp_image`.`id` =' . Utility::id($photo), ['in', '`album_img_rel`.`album_id`', $albumIds]]);
+            }
         }
-
+        
         return new ActiveDataProvider([
-            'query' => $query->orderBy('id desc')
+            'query' => empty($photo) ? $query->orderBy('rank desc') : $query->orderBy("`wp_image`.`id` = {$photoId} desc, rank desc")
         ]);
     }
 
@@ -62,6 +75,19 @@ class ImageController extends Controller
             ->where([
                 'status' => WpImage::STATUS_ACTIVE,
                 '`wp_image_fav`.`user_id`' => $user->id,
+            ]);
+        return new ActiveDataProvider([
+            'query' => $query->orderBy('id desc')
+        ]);
+    }
+    
+    public function actionLikeList() {
+        $user = \Yii::$app->user->identity;
+        $query =  WpImage::find()
+            ->leftJoin('wp_image_like', '`wp_image_like`.`wp_image_id` = `wp_image`.`id`')
+            ->where([
+                'status' => WpImage::STATUS_ACTIVE,
+                '`wp_image_like`.`user_id`' => $user->id,
             ]);
         return new ActiveDataProvider([
             'query' => $query->orderBy('id desc')

@@ -25,7 +25,7 @@ class AlbumController extends Controller
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
             'class' => HttpBearerAuth::className(),
-            'only' => ['fav'],
+            'only' => ['fav', 'fav-list'],
         ];
 
         return $behaviors;
