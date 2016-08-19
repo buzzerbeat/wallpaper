@@ -32,8 +32,9 @@ class AlbumController extends Controller
     }
     public function actionIndex()
     {
+        $query = Album::find()->where(['status'=>Album::STATUS_ACTIVE]);
         return new ActiveDataProvider([
-            'query' => Album::find()->orderBy('id desc')
+            'query' => $query->orderBy('id desc')
         ]);
     }
 
