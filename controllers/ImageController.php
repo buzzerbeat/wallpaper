@@ -27,11 +27,16 @@ class ImageController extends Controller
     {
         $behaviors = parent::behaviors();
         $behaviors[] = [
-            'class' => 'yii\filters\HttpCache',
+            'class' => 'yii\filters\PageCache',
             'only' => ['index'],
-            'lastModified' => function ($action, $params) {
-                return WpImage::find()->max('id');
-            },
+            'duration' => 180,
+            'variations' => [
+                \Yii::$app->language,
+            ],
+            'dependency' => [
+                'class' => 'common\components\WpDbDependency',
+                'sql' => 'SELECT COUNT(*) FROM wp_image',
+            ],
         ];
         $behaviors['authenticator'] = [
             'class' => HttpBearerAuth::className(),
