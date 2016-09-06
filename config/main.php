@@ -16,6 +16,10 @@ return [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
         ],
+        'request' => [
+            'enableCookieValidation' => false,
+        ],
+
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
@@ -35,10 +39,8 @@ return [
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'album'],
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'image'],
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'category'],
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'photo'],
                 'GET,HEAD images/<sid>' => 'image/view',
                 'GET,HEAD albums/<sid>' => 'album/view',
-                'GET,HEAD photos/<sid>' => 'photo/view',
                 'GET,HEAD categories/<sid>' => 'category/view',
             ],
         ],

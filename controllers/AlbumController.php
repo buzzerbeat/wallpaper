@@ -25,15 +25,16 @@ class AlbumController extends Controller
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
             'class' => HttpBearerAuth::className(),
-            'only' => ['fav'],
+            'only' => ['fav', 'fav-list'],
         ];
 
         return $behaviors;
     }
     public function actionIndex()
     {
+        $query = Album::find()->where(['status'=>Album::STATUS_ACTIVE]);
         return new ActiveDataProvider([
-            'query' => Album::find()->orderBy('id desc')
+            'query' => $query->orderBy('id desc')
         ]);
     }
 
