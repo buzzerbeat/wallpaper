@@ -13,6 +13,7 @@ use common\components\Utility;
 use wallpaper\models\ImageFavForm;
 use wallpaper\models\ImageLikeForm;
 use wallpaper\models\WpImage;
+use wallpaper\models\WpImageFav;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\auth\HttpBearerAuth;
@@ -24,6 +25,13 @@ class ImageController extends Controller
     public function behaviors()
     {
         $behaviors = parent::behaviors();
+        $behaviors[] = [
+            'class' => 'yii\filters\HttpCache',
+            'only' => ['index'],
+            'lastModified' => function ($action, $params) {
+                return WpImage::find()->max('id');
+            },
+        ];
         $behaviors['authenticator'] = [
             'class' => HttpBearerAuth::className(),
             'only' => ['fav',  'like', 'fav-list'],
