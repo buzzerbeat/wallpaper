@@ -31,7 +31,9 @@ class ImageController extends Controller
             'only' => ['index'],
             'duration' => 180,
             'variations' => [
-                \Yii::$app->language,
+                \Yii::$app->request->get('album', ''),
+                \Yii::$app->request->get('photo', ''),
+                \yii::$app->request->get('page', 0),
             ],
             'dependency' => [
                 'class' => 'common\components\WpDbDependency',
