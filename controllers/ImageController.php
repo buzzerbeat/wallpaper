@@ -34,6 +34,9 @@ class ImageController extends Controller
                 \Yii::$app->request->get('album', ''),
                 \Yii::$app->request->get('photo', ''),
                 \yii::$app->request->get('page', 0),
+                \yii::$app->request->get('per-page', 54),
+                \yii::$app->request->get('expand', ''),
+                \yii::$app->request->get('cachekey', ''),
             ],
             'dependency' => [
                 'class' => 'common\components\WpDbDependency',
